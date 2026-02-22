@@ -1587,55 +1587,6 @@ body.dark-mode .task-priority-select {
     color: var(--light);
 }
 
-.pomodoro-container {
-    text-align: center;
-    background-color: var(--white);
-    padding: 40px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-}
-
-.timer-display {
-    font-size: 5rem;
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 20px;
-    font-family: 'Inter', sans-serif;
-}
-
-.timer-controls {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.timer-modes {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.mode-btn {
-    background-color: var(--gray);
-    color: var(--dark);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.mode-btn.active {
-    background-color: var(--primary);
-    color: var(--white);
-}
-
-.mode-btn:hover:not(.active) {
-    background-color: #ced6da;
-}
-
 /* About Section Styles */
 .about-container {
     max-width: 800px;

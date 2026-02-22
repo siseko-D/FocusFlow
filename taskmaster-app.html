@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" href="css/CogniTask-app.css" />
+    <link rel="stylesheet" href="css/FocusFlow-app.css" />
     <style>
         .character-selection-container {
             display: flex;
@@ -221,16 +221,12 @@
             <div class="navbar-container">
                 <div class="navbar-brand">
                     <img src="images/task.png">
-                    <span>CogniTask</span>
+                    <span>FocusFlow</span>
                 </div>
                 <ul class="navbar-links">
                     <li>
                         <a href="#tasks" class="nav-link active"><i class="fas fa-home"></i> Home</a>
                     </li>
-                    <a href="#" class="nav-item" data-section="pomodoro">
-                        <i class="fas fa-clock"></i>
-                        <span>Pomodoro</span>
-                    </a>
                     <li>
                         <a href="#settings" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
                     </li>
@@ -298,25 +294,6 @@
                 <ul class="task-list" id="taskList">
                 </ul>
             </section>
-            <section id="pomodoro" class="content-section" style="display: none;">
-                <header class="app-header">
-                    <h1><i class="fas fa-clock"></i> Pomodoro Timer</h1>
-                </header>
-                <div class="pomodoro-container">
-                    <div id="timerDisplay" class="timer-display">25:00</div>
-                    <div class="timer-controls">
-                        <button id="startTimerBtn" class="btn primary-btn"><i class="fas fa-play"></i> Start</button>
-                        <button id="pauseTimerBtn" class="btn secondary-btn"><i class="fas fa-pause"></i> Pause</button>
-                        <button id="resetTimerBtn" class="btn danger-btn"><i class="fas fa-redo"></i> Reset</button>
-                    </div>
-                    <div class="timer-modes">
-                        <button class="mode-btn active" data-mode="pomodoro">Pomodoro</button>
-                        <button class="mode-btn" data-mode="short-break">Short Break</button>
-                        <button class="mode-btn" data-mode="long-break">Long Break</button>
-                    </div>
-                </div>
-            </section>
-
             <section id="settings" class="content-section" style="display: none;">
                 <header class="app-header">
                     <h1><i class="fas fa-cog"></i> Settings</h1>
@@ -511,7 +488,7 @@
                     <div style="display: flex; justify-content: center; margin-bottom: 15px;">
                         <img src="images/task.png">
                     </div>
-                    <h2 style="text-align: center;">CogniTask</h2>
+                    <h2 style="text-align: center;">FocusFlow</h2>
                     <p class="about-version" style="text-align: center;">Version 1.0.0</p>
                 </div>
 
@@ -529,7 +506,6 @@
                             <li><i class="fas fa-check-circle"></i> Create and manage tasks with priorities.</li>
                             <li><i class="fas fa-check-circle"></i> Schedule tasks with date and time.</li>
                             <li><i class="fas fa-check-circle"></i> Set reminders and notifications.</li>
-                            <li><i class="fas fa-check-circle"></i> Pomodoro timer for focused work sessions.</li>
                             <li><i class="fas fa-check-circle"></i> Multiple themes and customization options.</li>
                             <li><i class="fas fa-check-circle"></i> Dark mode for comfortable nighttime use.</li>
                             <li><i class="fas fa-check-circle"></i> Data export/import functionality.</li>
@@ -552,13 +528,13 @@
                     <div class="about-section">
                         <h3><i class="fas fa-user"></i> Developer</h3>
                         <div class="developer-info">
-                            <p>CogniTask was developed by <strong>FocusFlow</strong>, a passionate software
+                            <p>FocusFlow was developed by <strong>FocusFlow</strong>, a passionate software
                                 developer
                                 dedicated to creating applications that enhance productivity and simplify daily life.
                             </p>
 
                             <div class="developer-contact">
-                                <a href="https://github.com/SiyamthandaD" target="_blank" class="contact-link">
+                                <a href="https://github.com/siseko-D" target="_blank" class="contact-link">
                                     <i class="fab fa-github"></i> GitHub
                                 </a>
                                 <a href="https://www.linkedin.com/in/siyamthandad/" target="_blank"
@@ -578,7 +554,7 @@
                 </div>
 
                 <div class="about-footer">
-                    <p>&copy; 2025 CogniTask. All rights reserved.</p>
+                    <p>&copy; 2026 FocusFlow. All rights reserved.</p>
                 </div>
             </div>
         </div>
@@ -587,7 +563,7 @@
     <footer class="site-footer">
         <div class="footer-content">
             <div class="footer-text">
-                &copy; 2025 | Made with <i class="fas fa-heart" style="color: #e53935;"></i> by Siyamthanda Dlakavu |
+                &copy; 2026 | Made with <i class="fas fa-heart" style="color: #e53935;"></i> by Siyamthanda Dlakavu |
                 All Rights Reserved.
             </div>
         </div>
@@ -1303,94 +1279,6 @@
                     });
                 }
             }
-        });
-
-        // Pomodoro Timer Logic
-        const timerDisplay = document.getElementById('timerDisplay');
-        const startBtn = document.getElementById('startTimerBtn');
-        const pauseBtn = document.getElementById('pauseTimerBtn');
-        const resetBtn = document.getElementById('resetTimerBtn');
-        const modeBtns = document.querySelectorAll('.mode-btn');
-
-        let timer;
-        let timeInSeconds = 25 * 60; // 25 minutes for a pomodoro
-        let isTimerRunning = false;
-
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-        }
-
-        function startTimer() {
-            if (isTimerRunning) return;
-
-            isTimerRunning = true;
-            timer = setInterval(() => {
-                if (timeInSeconds <= 0) {
-                    clearInterval(timer);
-                    isTimerRunning = false;
-                    alert("Pomodoro session complete!");
-                    // You can add a sound here or change modes
-                    return;
-                }
-                timeInSeconds--;
-                timerDisplay.textContent = formatTime(timeInSeconds);
-            }, 1000);
-            startBtn.disabled = true;
-            pauseBtn.disabled = false;
-        }
-
-        function pauseTimer() {
-            clearInterval(timer);
-            isTimerRunning = false;
-            startBtn.disabled = false;
-            pauseBtn.disabled = true;
-        }
-
-        function resetTimer() {
-            clearInterval(timer);
-            isTimerRunning = false;
-
-            // Reset to current mode's time
-            const activeMode = document.querySelector('.mode-btn.active').dataset.mode;
-            if (activeMode === 'pomodoro') {
-                timeInSeconds = 25 * 60;
-            } else if (activeMode === 'short-break') {
-                timeInSeconds = 5 * 60;
-            } else if (activeMode === 'long-break') {
-                timeInSeconds = 15 * 60;
-            }
-
-            timerDisplay.textContent = formatTime(timeInSeconds);
-            startBtn.disabled = false;
-            pauseBtn.disabled = true;
-        }
-
-        function setTimerMode(mode) {
-            pauseTimer();
-
-            if (mode === 'pomodoro') {
-                timeInSeconds = 25 * 60;
-            } else if (mode === 'short-break') {
-                timeInSeconds = 5 * 60;
-            } else if (mode === 'long-break') {
-                timeInSeconds = 15 * 60;
-            }
-
-            timerDisplay.textContent = formatTime(timeInSeconds);
-        }
-
-        startBtn.addEventListener('click', startTimer);
-        pauseBtn.addEventListener('click', pauseTimer);
-        resetBtn.addEventListener('click', resetTimer);
-
-        modeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                modeBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                setTimerMode(btn.dataset.mode);
-            });
         });
 
         // To get the nav links to work
