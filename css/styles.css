@@ -1,0 +1,309 @@
+/* Base Styles */
+:root {
+    --primary-color: #4361ee;
+    --primary-light: #4895ef;
+    --secondary-color: #3f37c9;
+    --accent-color: #f72585;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --success-color: #4cc9f0;
+    --error-color: #f72585;
+    --border-radius: 12px;
+    --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Auth Container */
+.auth-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+}
+
+.auth-tab-content {
+    max-width: 450px;
+    width: 100%;
+    margin: 2rem;
+    padding: 2.5rem;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+}
+
+.auth-tab-content:hover {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Form Styles */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.auth-form h2 {
+    color: var(--dark-color);
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.auth-form label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.auth-form input {
+    padding: 1rem 1.2rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    width: 92%;
+    background-color: #f9f9f9;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.auth-form input:focus {
+    border-color: #4361ee;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+    background-color: #fff;
+}
+
+.auth-form input::placeholder {
+    color: #a0a0a0;
+    font-weight: 400;
+}
+
+/* Button Styles */
+.auth-submit-btn {
+    width: 92%;
+    margin: 0.8rem 1rem;
+    padding: 0.9rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.auth-submit-btn:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.auth-submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Error Message */
+.error-message {
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem;
+    border-radius: 6px;
+    background-color: rgba(247, 37, 133, 0.1);
+}
+
+/* Toggle Link */
+.toggle-form {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--dark-color);
+}
+
+.toggle-form a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.toggle-form a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+/* Password Wrapper */
+.password-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #adb5bd;
+    transition: var(--transition);
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .auth-tab-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .auth-form h2 {
+        font-size: 1.6rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-tab-content {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Input Container */
+.input-container {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+/* Floating Label Effect (optional) */
+.auth-form .floating-label {
+    position: absolute;
+    top: 1rem;
+    left: 1.2rem;
+    background: white;
+    padding: 0 0.5rem;
+    color: #777;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.auth-form input:focus+.floating-label,
+.auth-form input:not(:placeholder-shown)+.floating-label {
+    top: -0.5rem;
+    left: 0.8rem;
+    font-size: 0.75rem;
+    color: #4361ee;
+    background: linear-gradient(to bottom, white 50%, transparent 50%);
+}
+
+/* Registration Form Specific Adjustments */
+#register-content .auth-form {
+    gap: 0.1rem;
+}
+
+#register-content .auth-form input {
+    width: 92%;
+    margin: 0.3rem auto 0.8rem auto;
+    padding: 0.8rem 1rem;
+}
+
+#register-content .auth-submit-btn {
+    width: 92%;
+    margin: 0.8rem auto;
+    padding: 0.9rem;
+}
+
+#register-content .toggle-form {
+    margin-top: 1rem;
+}
+
+/* App Container Styles */
+#app-container {
+    width: 100%;
+    min-height: 100vh;
+    display: none;
+    /* Initially hidden */
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* App Loading State */
+.app-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.2rem;
+}
+
+/* App Error State */
+.app-error {
+    text-align: center;
+    padding: 2rem;
+    color: var(--error-color);
+}
+
+.app-error button {
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.app-error button:hover {
+    background: var(--secondary-color);
+}
+
+/* New style for the brand logo in the form */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+}
+
+.navbar-brand img {
+    height: 2rem; /* Matches the font size of the brand text */
+    width: auto; /* Maintains aspect ratio */
+    display: block; /* Prevents extra space below the image */
+}

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusFlow | Authentication</title>
+    <link rel="icon" type="image/x-icon" href="images/task.png" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div id="login-content" class="auth-tab-content">
+            <form id="login-form" class="auth-form">
+                <div class="navbar-brand">
+                    <img src="images/task.png">
+                    <span>FocusFlow</span>
+                </div>
+                <h2>Welcome Back!</h2>
+                <div class="input-container">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required />
+
+                    <div class="password-wrapper">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required />
+                        <span class="password-toggle" id="loginToggle">👁️</span>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn">Login</button>
+                    <p class="error-message" id="loginError" style="display: none;"></p>
+
+                    <div class="toggle-form">
+                        Don't have an account? <a href="#" id="show-register">Sign up</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="register-content" class="auth-tab-content" style="display: none;">
+            <form id="register-form" class="auth-form">
+                <div class="navbar-brand">
+                    <img src="images/task.png">
+                    <span>FocusFlow</span>
+                </div>
+                <h2>Join F</h2>
+                <label for="registerUsername">Username</label>
+                <input type="text" id="registerUsername" placeholder="Choose a username" required />
+
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" placeholder="Enter your email" required />
+
+                <div class="password-wrapper">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword"
+                        placeholder="Minimum 6 characters with letters and numbers" required />
+                    <span class="password-toggle" id="registerToggle">👁️</span>
+                </div>
+
+                <button type="submit" class="auth-submit-btn">Register</button>
+                <p class="error-message" id="registerError" style="display: none;"></p>
+
+                <div class="toggle-form">
+                    Already have an account? <a href="#" id="show-login">Sign in</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between login and register forms
+        document.getElementById('show-register').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.getElementById('login-content').style.display = 'none';
+            document.getElementById('register-content').style.display = 'block';
+        });
+
+        document.getElementById('show-login').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.getElementById('register-content').style.display = 'none';
+            document.getElementById('login-content').style.display = 'block';
+        });
+
+        // Password visibility toggle
+        function setupPasswordToggle(toggleId, inputId) {
+            const toggle = document.getElementById(toggleId);
+            const input = document.getElementById(inputId);
+
+            toggle.addEventListener('click', function () {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    toggle.textContent = '🙈';
+                } else {
+                    input.type = 'password';
+                    toggle.textContent = '👁️';
+                }
+            });
+        }
+
+        setupPasswordToggle('loginToggle', 'loginPassword');
+        setupPasswordToggle('registerToggle', 'registerPassword');
+
+        // --- Core Authentication Logic ---
+        const users = JSON.parse(localStorage.getItem('taskmaster_users')) || [];
+        const loginError = document.getElementById('loginError');
+        const registerError = document.getElementById('registerError');
+
+        // Handle Registration
+        document.getElementById('register-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            // Simple validation
+            if (password.length < 6) {
+                registerError.textContent = 'Password must be at least 6 characters.';
+                registerError.style.display = 'block';
+                return;
+            }
+
+            // Check if user already exists
+            const existingUser = users.find(user => user.email === email);
+            if (existingUser) {
+                registerError.textContent = 'This email is already registered.';
+                registerError.style.display = 'block';
+                return;
+            }
+
+            // Create new user
+            const newUser = {
+                id: Date.now().toString(),
+                username: username,
+                email: email,
+                password: password, // In a real app, this should be hashed
+                createdAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            localStorage.setItem('taskmaster_users', JSON.stringify(users));
+            localStorage.setItem('taskmaster_current_user', JSON.stringify(newUser));
+
+            registerError.textContent = '';
+            registerError.style.display = 'none';
+
+            // Redirect to the main app page
+            window.location.href = 'taskmaster-app.html';
+        });
+
+        // Handle Login
+        document.getElementById('login-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Find user
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                // Login successful
+                localStorage.setItem('taskmaster_current_user', JSON.stringify(user));
+                loginError.textContent = '';
+                loginError.style.display = 'none';
+
+                // Redirect to the main app page
+                window.location.href = 'taskmaster-app.html';
+            } else {
+                // Login failed
+                loginError.textContent = 'Invalid email or password.';
+                loginError.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

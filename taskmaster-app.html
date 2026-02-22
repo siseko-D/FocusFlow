@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusFlow | Your Productivity App</title>
+    <link rel="icon" type="image/x-icon" href="images/task.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/CogniTask-app.css" />
+    <style>
+        .character-selection-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            background-color: var(--light);
+            margin-bottom: 20px;
+        }
+
+        .character-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 3px solid transparent;
+            object-fit: cover;
+        }
+
+        .character-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.5);
+        }
+
+        .profile-picture {
+            display: none;
+            /* Initially hide the profile picture until a character is selected */
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid var(--primary);
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .character-selection-container {
+            background-color: #3b444c;
+            border-color: #555;
+        }
+
+        /* Priority indicators */
+        .priority-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .priority-high {
+            background-color: #dc2626;
+        }
+
+        .priority-medium {
+            background-color: #f59e0b;
+        }
+
+        .priority-low {
+            background-color: #10b981;
+        }
+    </style>
+    <style>
+        /* New theme styles */
+        body.theme-crimson {
+            --primary: #dc2626;
+            --secondary: #b91c1c;
+            --light: #fef2f2;
+            --dark: #450a0a;
+            --text-color: #1a202c;
+            --link-hover: #b91c1c;
+            --input-bg: #f5f5f5;
+            --btn-hover: #b91c1c;
+        }
+
+        body.dark-mode.theme-crimson {
+            --primary: #ef4444;
+            --secondary: #dc2626;
+            --light: #2c0000;
+            --dark: #b71c1c;
+            --text-color: #fca5a5;
+            --input-bg: #4c0808;
+            --link-hover: #dc2626;
+            --btn-hover: #dc2626;
+        }
+
+        body.theme-ocean {
+            --primary: #0284c7;
+            --secondary: #0369a1;
+            --light: #f0f9ff;
+            --dark: #075985;
+            --text-color: #1a202c;
+            --link-hover: #0369a1;
+            --input-bg: #f5f5f5;
+            --btn-hover: #0369a1;
+        }
+
+        body.dark-mode.theme-ocean {
+            --primary: #38bdf8;
+            --secondary: #0ea5e9;
+            --light: #013a51;
+            --dark: #0081a7;
+            --text-color: #e0faff;
+            --input-bg: #024a64;
+            --link-hover: #0ea5e9;
+            --btn-hover: #0ea5e9;
+        }
+    </style>
+    <style>
+        /* Style for all task.png images */
+        .navbar-brand img,
+        .app-header img,
+        .about-header img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
+
+        /* Navbar brand logo */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand img {
+            margin-right: 5px;
+        }
+
+        /* App header logo */
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .app-header img {
+            margin-right: 10px;
+        }
+
+        /* About section logo */
+        .about-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .about-header img {
+            margin-bottom: 15px;
+        }
+
+        /* Hover effects */
+        .navbar-brand img:hover,
+        .app-header img:hover,
+        .about-header img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Animation for about section logo */
+        .about-header img {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+
+            .navbar-brand img,
+            .app-header img,
+            .about-header img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .app-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .app-header img {
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <div class="navbar-brand">
+                    <img src="images/task.png">
+                    <span>CogniTask</span>
+                </div>
+                <ul class="navbar-links">
+                    <li>
+                        <a href="#tasks" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <a href="#" class="nav-item" data-section="pomodoro">
+                        <i class="fas fa-clock"></i>
+                        <span>Pomodoro</span>
+                    </a>
+                    <li>
+                        <a href="#settings" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+                    </li>
+                    <li>
+                        <a href="#profile" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+                    </li>
+                    <li>
+                        <a href="#about" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                    </li>
+                    <li>
+                        <a href="#" id="logoutBtn" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </li>
+                </ul>
+                <button class="navbar-toggle" id="navbarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <section id="tasks" class="content-section">
+                <header class="app-header">
+                    <img src="images/task.png"></i> Your Tasks</h1>
+                </header>
+
+                <div class="task-input-container">
+                    <div class="priority-option">
+                        <label for="taskPriority" class="setting-label">Priority:</label>
+                        <select id="taskPriority" class="task-priority-select">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <input type="text" id="taskInput" placeholder="Task title..." />
+                    <textarea id="taskDescription" placeholder="Task description..."></textarea>
+                    <div class="notify-option">
+                        <label for="notificationTimeInput" class="setting-label">Notify me in (minutes):</label>
+                        <input type="number" id="notificationTimeInput" min="1" placeholder="e.g., 5" />
+                    </div>
+                    <div class="booking-option">
+                        <div class="booking-header">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>Schedule Task</span>
+                        </div>
+                        <input type="datetime-local" id="taskBookingDate" class="booking-input" />
+                    </div>
+                    <button class="btn primary-btn" id="addTaskBtn">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                </div>
+
+                <div class="task-filters">
+                    <button class="filter-btn active" data-filter="active">
+                        Active (<span id="activeCount">0</span>)
+                    </button>
+                    <button class="filter-btn" data-filter="completed">
+                        Completed (<span id="completedCount">0</span>)
+                    </button>
+                    <button class="filter-btn" data-filter="deleted">
+                        Deleted (<span id="deletedCount">0</span>)
+                    </button>
+                </div>
+
+                <ul class="task-list" id="taskList">
+                </ul>
+            </section>
+            <section id="pomodoro" class="content-section" style="display: none;">
+                <header class="app-header">
+                    <h1><i class="fas fa-clock"></i> Pomodoro Timer</h1>
+                </header>
+                <div class="pomodoro-container">
+                    <div id="timerDisplay" class="timer-display">25:00</div>
+                    <div class="timer-controls">
+                        <button id="startTimerBtn" class="btn primary-btn"><i class="fas fa-play"></i> Start</button>
+                        <button id="pauseTimerBtn" class="btn secondary-btn"><i class="fas fa-pause"></i> Pause</button>
+                        <button id="resetTimerBtn" class="btn danger-btn"><i class="fas fa-redo"></i> Reset</button>
+                    </div>
+                    <div class="timer-modes">
+                        <button class="mode-btn active" data-mode="pomodoro">Pomodoro</button>
+                        <button class="mode-btn" data-mode="short-break">Short Break</button>
+                        <button class="mode-btn" data-mode="long-break">Long Break</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="settings" class="content-section" style="display: none;">
+                <header class="app-header">
+                    <h1><i class="fas fa-cog"></i> Settings</h1>
+                </header>
+                <main>
+                    <div class="settings-group">
+                        <h2>Personalization</h2>
+                        <div class="setting-item">
+                            <span class="setting-label">
+                                <i class="fas fa-palette"></i> Theme
+                            </span>
+                            <div class="theme-selector">
+                                <button class="theme-btn" data-theme="default"
+                                    style="background-color: #6c5ce7;"></button>
+                                <button class="theme-btn" data-theme="sapphire"
+                                    style="background-color: #1e3a8a;"></button>
+                                <button class="theme-btn" data-theme="emerald"
+                                    style="background-color: #047857;"></button>
+                                <button class="theme-btn" data-theme="amethyst"
+                                    style="background-color: #7e22ce;"></button>
+                                <button class="theme-btn" data-theme="crimson"
+                                    style="background-color: #dc2626;"></button>
+                                <button class="theme-btn" data-theme="ocean"
+                                    style="background-color: #0284c7;"></button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">
+                                <i class="fas fa-moon"></i> Dark Mode
+                            </span>
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeToggle" />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">
+                                <i class="fas fa-font"></i> Font
+                            </span>
+                            <div class="font-controls">
+                                <select id="fontFamilySelect">
+                                    <option value="Inter">Inter</option>
+                                    <option value="Roboto">Roboto</option>
+                                    <option value="Lato">Lato</option>
+                                    <option value="Montserrat">Montserrat</option>
+                                    <option value="OpenSans">Open Sans</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">
+                                <i class="fas fa-text-height"></i> Font Size
+                            </span>
+                            <div class="font-controls">
+                                <input type="range" id="fontSizeRange" min="8" max="24" value="16" step="1" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>General</h2>
+                        <div class="setting-item">
+                            <span class="setting-label">
+                                <i class="fas fa-bell"></i> Notifications
+                            </span>
+                            <label class="switch">
+                                <input type="checkbox" id="notificationsToggle" checked />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">
+                                <i class="fas fa-eye"></i> Default View
+                            </span>
+                            <div class="setting-control">
+                                <select id="defaultViewSelect">
+                                    <option value="active">Active Tasks</option>
+                                    <option value="completed">Completed Tasks</option>
+                                    <option value="deleted">Deleted Tasks</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Data Management</h2>
+                        <div class="setting-item">
+                            <span class="setting-label">
+                                <i class="fas fa-file-export"></i> Export Data
+                            </span>
+                            <div class="setting-control">
+                                <button id="exportDataBtn" class="btn secondary-btn">Export</button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">
+                                <i class="fas fa-file-import"></i> Import Data
+                            </span>
+                            <div class="setting-control">
+                                <input type="file" id="importDataInput" accept=".json" style="display:none;" />
+                                <button id="importDataBtn" class="btn secondary-btn">Import</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h2>Account</h2>
+                        <div class="account-actions">
+                            <div class="account-action">
+                                <button id="changePasswordBtn" class="account-btn">
+                                    <div class="account-btn-icon">
+                                        <i class="fas fa-key"></i>
+                                    </div>
+                                    <div class="account-btn-content">
+                                        <span class="account-btn-title">Change Password</span>
+                                        <span class="account-btn-description">Update your account password</span>
+                                    </div>
+                                    <i class="fas fa-chevron-right account-btn-arrow"></i>
+                                </button><br />
+                                <div class="account-action">
+                                    <button id="deleteAccountBtn" class="account-btn danger">
+                                        <div class="account-btn-icon">
+                                            <i class="fas fa-user-times"></i>
+                                        </div>
+                                        <div class="account-btn-content">
+                                            <span class="account-btn-title">Delete Account</span>
+                                            <span class="account-btn-description">Permanently remove your account</span>
+                                        </div>
+                                        <i class="fas fa-chevron-right account-btn-arrow"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                </main>
+            </section>
+
+            <section id="profile" class="content-section" style="display: none;">
+                <header class="app-header">
+                    <h1><i class="fas fa-user"></i> Profile</h1>
+                </header>
+                <main id="profileContent">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div id="characterSelectionContainer" class="character-selection-container">
+                                <img src="images/female1.jpg" alt="Female Character 1" class="character-avatar">
+                                <img src="images/male1.jpg" alt="Female Character 2" class="character-avatar">
+                                <img src="images/female2.avif" alt="Female Character 3" class="character-avatar">
+                                <img src="images/male2.png" alt="Male Character 1" class="character-avatar">
+                                <img src="images/female3.jpg" alt="Male Character 2" class="character-avatar">
+                                <img src="images/male3.jpg" alt="Male Character 3" class="character-avatar">
+                            </div>
+
+                            <img id="profilePicture" alt="Profile Picture" class="profile-picture">
+                            <h2 id="profileUsername" class="profile-name"></h2>
+                            <p class="profile-email"><i class="fas fa-envelope"></i> <span id="profileEmail"></span></p>
+                            <p class="profile-join-date"><i class="fas fa-calendar-alt"></i> Member since: <span
+                                    id="profileJoinDate"></span></p>
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <span class="stat-number" id="tasksCreatedCount">0</span>
+                                <span class="stat-label">Tasks Created</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="tasksCompletedCount">0</span>
+                                <span class="stat-label">Tasks Completed</span>
+                            </div>
+                        </div>
+                        <div class="profile-actions">
+                            <button id="changeCharacterBtn" class="btn secondary-btn full-width-btn">
+                                <i class="fas fa-user-circle"></i> Change Character
+                            </button>
+                            <button id="logoutProfileBtn" class="btn danger-btn full-width-btn"
+                                style="margin-top: 10px;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </main>
+            </section>
+        </main>
+    </div>
+
+    <section id="about" class="content-section" style="display: none;">
+        <header class="app-header">
+            <h1><i class="fas fa-info-circle"></i> About FocusFlow</h1>
+        </header>
+
+        <div class="about-container">
+            <div class="about-card">
+                <div class="about-header">
+                    <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                        <img src="images/task.png">
+                    </div>
+                    <h2 style="text-align: center;">CogniTask</h2>
+                    <p class="about-version" style="text-align: center;">Version 1.0.0</p>
+                </div>
+
+                <div class="about-content">
+                    <div class="about-section">
+                        <h3><i class="fas fa-rocket"></i> What is FocusFlow?</h3>
+                        <p>FocusFlow is a powerful productivity application designed to help you organize your tasks,
+                            boost your efficiency, and achieve your goals. With a clean interface and powerful features,
+                            it's your ultimate companion for task management.</p>
+                    </div>
+
+                    <div class="about-section">
+                        <h3><i class="fas fa-star"></i> Key Features</h3>
+                        <ul class="features-list">
+                            <li><i class="fas fa-check-circle"></i> Create and manage tasks with priorities.</li>
+                            <li><i class="fas fa-check-circle"></i> Schedule tasks with date and time.</li>
+                            <li><i class="fas fa-check-circle"></i> Set reminders and notifications.</li>
+                            <li><i class="fas fa-check-circle"></i> Pomodoro timer for focused work sessions.</li>
+                            <li><i class="fas fa-check-circle"></i> Multiple themes and customization options.</li>
+                            <li><i class="fas fa-check-circle"></i> Dark mode for comfortable nighttime use.</li>
+                            <li><i class="fas fa-check-circle"></i> Data export/import functionality.</li>
+                            <li><i class="fas fa-check-circle"></i> User profiles with character avatars.</li>
+                        </ul>
+                    </div>
+
+                    <div class="about-section">
+                        <h3><i class="fas fa-code"></i> Technologies Used</h3>
+                        <div class="tech-badges">
+                            <span class="tech-badge">HTML5</span>
+                            <span class="tech-badge">CSS3</span>
+                            <span class="tech-badge">JavaScript</span>
+                            <span class="tech-badge">LocalStorage API</span>
+                            <span class="tech-badge">Font Awesome</span>
+                            <span class="tech-badge">Google Fonts</span>
+                        </div>
+                    </div>
+
+                    <div class="about-section">
+                        <h3><i class="fas fa-user"></i> Developer</h3>
+                        <div class="developer-info">
+                            <p>CogniTask was developed by <strong>FocusFlow</strong>, a passionate software
+                                developer
+                                dedicated to creating applications that enhance productivity and simplify daily life.
+                            </p>
+
+                            <div class="developer-contact">
+                                <a href="https://github.com/SiyamthandaD" target="_blank" class="contact-link">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                                <a href="https://www.linkedin.com/in/siyamthandad/" target="_blank"
+                                    class="contact-link">
+                                    <i class="fab fa-linkedin"></i> LinkedIn
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="about-section">
+                        <h3><i class="fas fa-heart"></i> Acknowledgments</h3>
+                        <p>Special thanks to the open-source community for providing invaluable resources and
+                            inspiration.
+                            Icons provided by Font Awesome, and fonts by Google Fonts.</p>
+                    </div>
+                </div>
+
+                <div class="about-footer">
+                    <p>&copy; 2025 CogniTask. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-text">
+                &copy; 2025 | Made with <i class="fas fa-heart" style="color: #e53935;"></i> by Siyamthanda Dlakavu |
+                All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <div id="notificationPopup" class="notification-popup">
+        <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+        </div>
+        <div class="notification-content">
+            <h4 class="notification-title">Task Reminder</h4>
+            <p class="notification-body">Your task is due: <span id="notificationTaskName"></span></p>
+        </div>
+        <button class="notification-close-btn" onclick="hideNotification()">
+            &times;
+        </button>
+    </div>
+
+    <div id="messagePopup" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Notice</h3>
+                <button class="modal-close-btn" onclick="hideMessagePopup()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Password change is not fully implemented in this demo. For a real app, this would involve a
+                    server-side process.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn primary-btn" onclick="hideMessagePopup()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteAccountModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Delete Account</h3>
+                <button class="modal-close-btn" onclick="hideDeleteAccountModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to permanently delete your account? This action cannot be undone and all your
+                    data will be lost.</p>
+                <div class="confirmation-input">
+                    <label for="confirmDeleteInput">Type "DELETE" to confirm:</label>
+                    <input type="text" id="confirmDeleteInput" placeholder="Type DELETE here">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary-btn" onclick="hideDeleteAccountModal()">Cancel</button>
+                <button id="confirmDeleteBtn" class="btn danger-btn" disabled>Delete Account</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Task Management with localStorage
+        let tasks = JSON.parse(localStorage.getItem('taskmaster_tasks')) || [];
+        let deletedTasks = JSON.parse(localStorage.getItem('taskmaster_deleted_tasks')) || [];
+        let currentFilter = 'active';
+        const currentUser = JSON.parse(localStorage.getItem('taskmaster_current_user'));
+        let notificationTimeouts = [];
+
+        // DOM Elements
+        const navbarToggle = document.getElementById('navbarToggle');
+        const navbarLinks = document.querySelector('.navbar-links');
+        const contentSections = document.querySelectorAll('.content-section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const taskInput = document.getElementById('taskInput');
+        const taskDescriptionInput = document.getElementById('taskDescription');
+        const taskPrioritySelect = document.getElementById('taskPriority');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskList = document.getElementById('taskList');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const activeCount = document.getElementById('activeCount');
+        const completedCount = document.getElementById('completedCount');
+        const deletedCount = document.getElementById('deletedCount');
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        const profileUsername = document.getElementById('profileUsername');
+        const profileEmail = document.getElementById('profileEmail');
+        const profileJoinDate = document.getElementById('profileJoinDate');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const themeColorPicker = document.getElementById('themeColorPicker');
+        const fontFamilySelect = document.getElementById('fontFamilySelect');
+        const fontSizeRange = document.getElementById('fontSizeRange');
+        // New DOM elements for additional settings
+        const notificationsToggle = document.getElementById('notificationsToggle');
+        const defaultViewSelect = document.getElementById('defaultViewSelect');
+        // Profile Page DOM Elements
+        const tasksCreatedCount = document.getElementById('tasksCreatedCount');
+        const tasksCompletedCount = document.getElementById('tasksCompletedCount');
+        const logoutProfileBtn = document.getElementById('logoutProfileBtn');
+        const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+        // New DOM elements for additional settings
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        const importDataBtn = document.getElementById('importDataBtn');
+        const importDataInput = document.getElementById('importDataInput');
+        const notificationTimeInput = document.getElementById('notificationTimeInput');
+        const notificationPopup = document.getElementById('notificationPopup');
+        const notificationTaskName = document.getElementById('notificationTaskName');
+        const messagePopup = document.getElementById('messagePopup');
+        const deleteAccountModal = document.getElementById('deleteAccountModal');
+        const confirmDeleteInput = document.getElementById('confirmDeleteInput');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        // NEW: Theme selector elements
+        const themeBtns = document.querySelectorAll('.theme-btn');
+        // NEW: Character selection elements
+        const profilePicture = document.getElementById('profilePicture');
+        const characterSelectionContainer = document.getElementById('characterSelectionContainer');
+        const characterAvatars = document.querySelectorAll('.character-avatar');
+        const changeCharacterBtn = document.getElementById('changeCharacterBtn');
+        // NEW: Task booking date element
+        const taskBookingDate = document.getElementById('taskBookingDate');
+
+        // Functions
+        const showSection = (sectionId) => {
+            // Hide all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            // Show the requested section
+            const sectionToShow = document.getElementById(sectionId);
+            if (sectionToShow) {
+                sectionToShow.style.display = 'block';
+            }
+            // Update active class on nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (item.getAttribute('data-section') === sectionId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+        const saveTasks = () => {
+            localStorage.setItem('taskmaster_tasks', JSON.stringify(tasks));
+            localStorage.setItem('taskmaster_deleted_tasks', JSON.stringify(deletedTasks));
+        };
+
+        const clearAllNotifications = () => {
+            notificationTimeouts.forEach(timeout => {
+                clearTimeout(timeout.id);
+            });
+            notificationTimeouts = [];
+            console.log("Cleared all pending notifications");
+        };
+
+        const createNotification = (task) => {
+            // Clear any existing notification for this task
+            clearTaskNotification(task.id);
+
+            // Handle scheduled date notifications
+            if (task.bookingDate) {
+                const scheduledTime = new Date(task.bookingDate).getTime();
+                const currentTime = new Date().getTime();
+                const timeUntilNotification = scheduledTime - currentTime;
+
+                if (timeUntilNotification > 0) {
+                    console.log(`Creating notification for scheduled task: "${task.title}" at ${task.bookingDate}`);
+
+                    const timeoutId = setTimeout(() => {
+                        console.log(`Showing notification for scheduled task: "${task.title}"`);
+                        showNotification(task.title);
+                        // After showing notification, remove it from the list
+                        notificationTimeouts = notificationTimeouts.filter(t => t.id !== timeoutId);
+                    }, timeUntilNotification);
+
+                    notificationTimeouts.push({
+                        id: timeoutId,
+                        taskId: task.id
+                    });
+                }
+            }
+
+            // Handle "notify me in X minutes" notifications
+            const notificationTime = parseInt(task.notificationTime);
+            if (!notificationTime || notificationTime <= 0) {
+                console.log("No valid notification time set for task:", task.title);
+                return;
+            }
+
+            const timeInMs = notificationTime * 60 * 1000;
+            console.log(`Creating notification for task: "${task.title}" in ${notificationTime} minutes (${timeInMs}ms)`);
+
+            const timeoutId = setTimeout(() => {
+                console.log(`Showing notification for task: "${task.title}"`);
+                showNotification(task.title);
+                // After showing notification, remove it from the list
+                notificationTimeouts = notificationTimeouts.filter(t => t.id !== timeoutId);
+            }, timeInMs);
+
+            notificationTimeouts.push({
+                id: timeoutId,
+                taskId: task.id
+            });
+
+            console.log("Scheduled notifications:", notificationTimeouts);
+        };
+
+        // Helper function to clear notifications for a specific task
+        const clearTaskNotification = (taskId) => {
+            notificationTimeouts = notificationTimeouts.filter(notification => {
+                if (notification.taskId === taskId) {
+                    clearTimeout(notification.id);
+                    return false;
+                }
+                return true;
+            });
+        };
+
+        const showNotification = (taskName) => {
+            try {
+                if (notificationsToggle.checked) {
+                    console.log("Displaying notification for:", taskName);
+                    notificationTaskName.textContent = taskName;
+                    notificationPopup.classList.add('visible');
+                    setTimeout(() => {
+                        hideNotification();
+                    }, 5000); // Hide after 5 seconds
+                } else {
+                    console.log("Notifications are disabled - not showing notification");
+                }
+            } catch (error) {
+                console.error("Error showing notification:", error);
+            }
+        };
+
+        const hideNotification = () => {
+            try {
+                notificationPopup.classList.remove('visible');
+            } catch (error) {
+                console.error("Error hiding notification:", error);
+            }
+        };
+
+        const showMessagePopup = () => {
+            messagePopup.classList.add('show');
+        };
+
+        const hideMessagePopup = () => {
+            messagePopup.classList.remove('show');
+        };
+
+        const showDeleteAccountModal = () => {
+            deleteAccountModal.classList.add('show');
+        };
+
+        const hideDeleteAccountModal = () => {
+            deleteAccountModal.classList.remove('show');
+        };
+
+        const updateCounts = () => {
+            activeCount.textContent = tasks.filter(task => !task.completed).length;
+            completedCount.textContent = tasks.filter(task => task.completed).length;
+            deletedCount.textContent = deletedTasks.length;
+            tasksCreatedCount.textContent = tasks.length + deletedTasks.length;
+            tasksCompletedCount.textContent = tasks.filter(task => task.completed).length;
+        };
+
+        const renderTasks = () => {
+            taskList.innerHTML = '';
+
+            if (currentFilter === 'deleted') {
+                if (deletedTasks.length === 0) {
+                    taskList.innerHTML = '<div class="no-tasks-message">No deleted tasks.</div>';
+                } else {
+                    deletedTasks.forEach(task => {
+                        const li = document.createElement('li');
+                        li.className = 'task-item deleted';
+                        li.innerHTML = `
+                    <div class="task-info">
+                        <div class="task-text-container">
+                            <span class="task-title">${task.title}</span>
+                            <span class="task-description">${task.description}</span>
+                            ${task.bookingDate ? `
+                                <span class="task-booking">
+                                    <i class="far fa-calendar-alt"></i>
+                                    ${new Date(task.bookingDate).toLocaleString([], {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn secondary-btn restore-btn" data-id="${task.id}">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button class="btn danger-btn delete-permanently-btn" data-id="${task.id}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+                        taskList.appendChild(li);
+                    });
+                }
+            } else {
+                const filteredTasks = tasks.filter(task =>
+                    currentFilter === 'active' ? !task.completed : task.completed
+                );
+
+                if (filteredTasks.length === 0) {
+                    taskList.innerHTML = `<div class="no-tasks-message">No ${currentFilter} tasks.</div>`;
+                } else {
+                    filteredTasks.forEach(task => {
+                        const li = document.createElement('li');
+                        li.className = `task-item ${task.completed ? 'completed' : ''}`;
+                        li.innerHTML = `
+                    <div class="task-info">
+                        <input type="checkbox" data-id="${task.id}" ${task.completed ? 'checked' : ''}>
+                        <div class="task-text-container">
+                            <span class="task-title">
+                                <span class="priority-indicator priority-${task.priority || 'medium'}"></span>
+                                ${task.title}
+                            </span>
+                            <span class="task-description">${task.description}</span>
+                            ${task.bookingDate ? `
+                                <span class="task-booking">
+                                    <i class="far fa-calendar-alt"></i>
+                                    ${new Date(task.bookingDate).toLocaleString([], {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn danger-btn move-to-trash-btn" data-id="${task.id}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+                        taskList.appendChild(li);
+                    });
+                }
+            }
+        };
+        const loadTasks = () => {
+            updateCounts();
+            renderTasks();
+        };
+
+        const loadProfile = () => {
+            if (currentUser) {
+                profileUsername.textContent = currentUser.username;
+                profileEmail.textContent = currentUser.email;
+                profileJoinDate.textContent = new Date(currentUser.createdAt).toLocaleDateString();
+                updateCounts();
+
+                // Load saved character or show selection
+                const savedCharacter = localStorage.getItem('taskmaster_character');
+                if (savedCharacter) {
+                    profilePicture.src = savedCharacter;
+                    profilePicture.style.display = 'block';
+                    characterSelectionContainer.style.display = 'none';
+                } else {
+                    profilePicture.style.display = 'none';
+                    characterSelectionContainer.style.display = 'flex';
+                }
+            }
+        };
+
+        const setDarkMode = (isEnabled) => {
+            document.body.classList.toggle('dark-mode', isEnabled);
+            localStorage.setItem('taskmaster_dark_mode', isEnabled);
+        };
+
+        const setTheme = (themeName) => {
+            document.body.className = document.body.className.replace(/\btheme-\S+/g, ''); // Remove existing themes
+            if (themeName !== 'default') {
+                document.body.classList.add(`theme-${themeName}`);
+            }
+            localStorage.setItem('taskmaster_theme', themeName);
+        };
+
+        const setFontFamily = (fontFamily) => {
+            document.body.style.fontFamily = fontFamily;
+        };
+
+        const setFontSize = (fontSize) => {
+            document.body.style.fontSize = `${fontSize}px`;
+        };
+
+        const handleExportData = () => {
+            const data = {
+                tasks: tasks,
+                deletedTasks: deletedTasks,
+                user: currentUser
+            };
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], {
+                type: 'application/json'
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'taskmaster_data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+
+        const handleImportData = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.tasks && importedData.deletedTasks) {
+                        tasks = importedData.tasks;
+                        deletedTasks = importedData.deletedTasks;
+                        saveTasks();
+                        loadTasks();
+                        alert('Data imported successfully!');
+                    } else {
+                        alert('Invalid data file format.');
+                    }
+                } catch (error) {
+                    alert('Failed to parse data file.');
+                    console.error('Import error:', error);
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        // Event Listeners
+        navbarToggle.addEventListener('click', () => {
+            navbarLinks.classList.toggle('active');
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('href').substring(1);
+                showSection(sectionId);
+            });
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('taskmaster_current_user');
+            window.location.href = 'index.html';
+        });
+
+        logoutProfileBtn.addEventListener('click', () => {
+            localStorage.removeItem('taskmaster_current_user');
+            window.location.href = 'index.html';
+        });
+
+        addTaskBtn.addEventListener('click', function () {
+            const taskText = taskInput.value.trim();
+            const taskDescription = taskDescriptionInput.value.trim();
+            const taskPriority = taskPrioritySelect.value;
+            const notificationTime = parseInt(notificationTimeInput.value) || 0; // Convert to number
+            const taskBookingDateValue = taskBookingDate.value;
+
+            if (taskText !== '') {
+                const newTask = {
+                    id: Date.now(),
+                    title: taskText,
+                    description: taskDescription,
+                    priority: taskPriority,
+                    notificationTime: notificationTime,
+                    bookingDate: taskBookingDateValue,
+                    completed: false,
+                    deleted: false,
+                    createdAt: new Date().toISOString()
+                };
+
+                tasks.unshift(newTask);
+                saveTasks();
+                renderTasks();
+                updateCounts();
+
+                // Schedule notification if time is set
+                if ((notificationTime > 0 || taskBookingDateValue) && notificationsToggle.checked) {
+                    createNotification(newTask);
+                }
+
+                taskInput.value = '';
+                taskDescriptionInput.value = '';
+                notificationTimeInput.value = '';
+                taskBookingDate.value = '';
+            }
+        });
+
+        taskList.addEventListener('click', (e) => {
+            // Handle checkbox click
+            if (e.target.matches('input[type="checkbox"]')) {
+                const taskId = parseInt(e.target.dataset.id);
+                const task = tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.completed = e.target.checked;
+                    saveTasks();
+                    loadTasks();
+                }
+            }
+            // Handle move to trash button
+            if (e.target.closest('.move-to-trash-btn')) {
+                const button = e.target.closest('.move-to-trash-btn');
+                const taskId = parseInt(button.dataset.id);
+                const taskIndex = tasks.findIndex(t => t.id === taskId);
+                if (taskIndex > -1) {
+                    const taskToMove = tasks.splice(taskIndex, 1)[0];
+                    deletedTasks.push(taskToMove);
+                    saveTasks();
+                    loadTasks();
+
+                    // Clear any pending notification for this task
+                    clearTaskNotification(taskId);
+                }
+            }
+
+            // Handle permanent delete button
+            if (e.target.closest('.delete-permanently-btn')) {
+                const button = e.target.closest('.delete-permanently-btn');
+                const taskId = parseInt(button.dataset.id);
+                deletedTasks = deletedTasks.filter(t => t.id !== taskId);
+                saveTasks();
+                loadTasks();
+            }
+
+            // Handle restore button
+            if (e.target.closest('.restore-btn')) {
+                const button = e.target.closest('.restore-btn');
+                const taskId = parseInt(button.dataset.id);
+                const taskIndex = deletedTasks.findIndex(t => t.id === taskId);
+                if (taskIndex > -1) {
+                    const taskToRestore = deletedTasks.splice(taskIndex, 1)[0];
+                    taskToRestore.completed = false; // Reset completed status
+                    tasks.push(taskToRestore);
+                    saveTasks();
+                    loadTasks();
+
+                    // Re-schedule notification if needed
+                    if ((taskToRestore.notificationTime > 0 || taskToRestore.bookingDate) && notificationsToggle.checked) {
+                        createNotification(taskToRestore);
+                    }
+                }
+            }
+        });
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderTasks();
+                updateCounts();
+            });
+        });
+
+        changePasswordBtn.addEventListener('click', showMessagePopup);
+
+        deleteAccountBtn.addEventListener('click', showDeleteAccountModal);
+
+        confirmDeleteInput.addEventListener('input', (e) => {
+            if (e.target.value === 'DELETE') {
+                confirmDeleteBtn.disabled = false;
+            } else {
+                confirmDeleteBtn.disabled = true;
+            }
+        });
+
+        confirmDeleteBtn.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
+
+        darkModeToggle.addEventListener('change', (e) => {
+            setDarkMode(e.target.checked);
+        });
+
+        themeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.dataset.theme;
+                setTheme(theme);
+            });
+        });
+
+        fontFamilySelect.addEventListener('change', (e) => {
+            setFontFamily(e.target.value);
+            localStorage.setItem('taskmaster_font_family', e.target.value);
+        });
+
+        fontSizeRange.addEventListener('input', (e) => {
+            setFontSize(e.target.value);
+        });
+
+        fontSizeRange.addEventListener('change', (e) => {
+            localStorage.setItem('taskmaster_font_size', e.target.value);
+        });
+
+        notificationsToggle.addEventListener('change', (e) => {
+            if (!e.target.checked) {
+                clearAllNotifications();
+            } else {
+                // Re-schedule notifications if enabled
+                tasks.forEach(task => {
+                    if (task.notificationTime > 0 || task.bookingDate) {
+                        createNotification(task);
+                    }
+                });
+            }
+            localStorage.setItem('taskmaster_notifications', e.target.checked);
+            console.log("Notifications toggled:", e.target.checked ? "ON" : "OFF");
+        });
+
+        defaultViewSelect.addEventListener('change', (e) => {
+            const newDefaultView = e.target.value;
+            localStorage.setItem('taskmaster_default_view', newDefaultView);
+            // Re-render tasks based on the new default view
+            currentFilter = newDefaultView;
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            const defaultBtn = document.querySelector(`[data-filter="${newDefaultView}"]`);
+            if (defaultBtn) {
+                defaultBtn.classList.add('active');
+            }
+            renderTasks();
+            updateCounts();
+        });
+
+        exportDataBtn.addEventListener('click', handleExportData);
+
+        importDataBtn.addEventListener('click', () => {
+            importDataInput.click();
+        });
+
+        importDataInput.addEventListener('change', handleImportData);
+
+        // Character selection event listeners
+        characterAvatars.forEach(avatar => {
+            avatar.addEventListener('click', () => {
+                const characterSrc = avatar.src;
+                profilePicture.src = characterSrc;
+                localStorage.setItem('taskmaster_character', characterSrc);
+                profilePicture.style.display = 'block';
+                characterSelectionContainer.style.display = 'none';
+            });
+        });
+
+        changeCharacterBtn.addEventListener('click', () => {
+            profilePicture.style.display = 'none';
+            characterSelectionContainer.style.display = 'flex';
+        });
+
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = localStorage.getItem('taskmaster_current_user');
+            if (!user) {
+                window.location.href = 'index.html';
+            } else {
+                // Apply saved settings
+                const savedTheme = localStorage.getItem('taskmaster_theme') || 'default';
+                setTheme(savedTheme);
+                const savedDarkMode = JSON.parse(localStorage.getItem('taskmaster_dark_mode'));
+                if (savedDarkMode !== null) {
+                    setDarkMode(savedDarkMode);
+                    darkModeToggle.checked = savedDarkMode;
+                }
+
+                const savedFontFamily = localStorage.getItem('taskmaster_font_family');
+                if (savedFontFamily) {
+                    setFontFamily(savedFontFamily);
+                    fontFamilySelect.value = savedFontFamily;
+                }
+
+                const savedFontSize = localStorage.getItem('taskmaster_font_size');
+                if (savedFontSize) {
+                    setFontSize(savedFontSize);
+                    fontSizeRange.value = savedFontSize;
+                }
+
+                // Apply saved General settings
+                const savedNotifications = localStorage.getItem('taskmaster_notifications');
+                if (savedNotifications !== null) {
+                    notificationsToggle.checked = JSON.parse(savedNotifications);
+                }
+
+                const savedDefaultView = localStorage.getItem('taskmaster_default_view');
+                if (savedDefaultView) {
+                    defaultViewSelect.value = savedDefaultView;
+                    currentFilter = savedDefaultView;
+                    // Update the active filter button to match the default view
+                    filterBtns.forEach(btn => btn.classList.remove('active'));
+                    const defaultBtn = document.querySelector(`[data-filter="${savedDefaultView}"]`);
+                    if (defaultBtn) {
+                        defaultBtn.classList.add('active');
+                    }
+                }
+
+                showSection('tasks');
+                loadTasks();
+                loadProfile();
+
+                // Re-schedule notifications for existing tasks on page load
+                if (notificationsToggle.checked) {
+                    tasks.forEach(task => {
+                        if (task.notificationTime > 0 || task.bookingDate) {
+                            createNotification(task);
+                        }
+                    });
+                }
+            }
+        });
+
+        // Pomodoro Timer Logic
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startBtn = document.getElementById('startTimerBtn');
+        const pauseBtn = document.getElementById('pauseTimerBtn');
+        const resetBtn = document.getElementById('resetTimerBtn');
+        const modeBtns = document.querySelectorAll('.mode-btn');
+
+        let timer;
+        let timeInSeconds = 25 * 60; // 25 minutes for a pomodoro
+        let isTimerRunning = false;
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (isTimerRunning) return;
+
+            isTimerRunning = true;
+            timer = setInterval(() => {
+                if (timeInSeconds <= 0) {
+                    clearInterval(timer);
+                    isTimerRunning = false;
+                    alert("Pomodoro session complete!");
+                    // You can add a sound here or change modes
+                    return;
+                }
+                timeInSeconds--;
+                timerDisplay.textContent = formatTime(timeInSeconds);
+            }, 1000);
+            startBtn.disabled = true;
+            pauseBtn.disabled = false;
+        }
+
+        function pauseTimer() {
+            clearInterval(timer);
+            isTimerRunning = false;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            isTimerRunning = false;
+
+            // Reset to current mode's time
+            const activeMode = document.querySelector('.mode-btn.active').dataset.mode;
+            if (activeMode === 'pomodoro') {
+                timeInSeconds = 25 * 60;
+            } else if (activeMode === 'short-break') {
+                timeInSeconds = 5 * 60;
+            } else if (activeMode === 'long-break') {
+                timeInSeconds = 15 * 60;
+            }
+
+            timerDisplay.textContent = formatTime(timeInSeconds);
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+
+        function setTimerMode(mode) {
+            pauseTimer();
+
+            if (mode === 'pomodoro') {
+                timeInSeconds = 25 * 60;
+            } else if (mode === 'short-break') {
+                timeInSeconds = 5 * 60;
+            } else if (mode === 'long-break') {
+                timeInSeconds = 15 * 60;
+            }
+
+            timerDisplay.textContent = formatTime(timeInSeconds);
+        }
+
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', pauseTimer);
+        resetBtn.addEventListener('click', resetTimer);
+
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                setTimerMode(btn.dataset.mode);
+            });
+        });
+
+        // To get the nav links to work
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = e.target.closest('.nav-item').getAttribute('data-section');
+                showSection(sectionId);
+            });
+        });
+
+        // Initial call to show the tasks section on load
+        showSection('tasks');
+    </script>
+</body>
+
+</html>
