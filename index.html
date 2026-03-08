@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +8,6 @@
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
     <div class="auth-container">
         <div id="login-content" class="auth-tab-content">
@@ -69,110 +67,7 @@
         </div>
     </div>
 
-    <script>
-        // Toggle between login and register forms
-        document.getElementById('show-register').addEventListener('click', function (e) {
-            e.preventDefault();
-            document.getElementById('login-content').style.display = 'none';
-            document.getElementById('register-content').style.display = 'block';
-        });
-
-        document.getElementById('show-login').addEventListener('click', function (e) {
-            e.preventDefault();
-            document.getElementById('register-content').style.display = 'none';
-            document.getElementById('login-content').style.display = 'block';
-        });
-
-        // Password visibility toggle
-        function setupPasswordToggle(toggleId, inputId) {
-            const toggle = document.getElementById(toggleId);
-            const input = document.getElementById(inputId);
-
-            toggle.addEventListener('click', function () {
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    toggle.textContent = '🙈';
-                } else {
-                    input.type = 'password';
-                    toggle.textContent = '👁️';
-                }
-            });
-        }
-
-        setupPasswordToggle('loginToggle', 'loginPassword');
-        setupPasswordToggle('registerToggle', 'registerPassword');
-
-        // --- Core Authentication Logic ---
-        const users = JSON.parse(localStorage.getItem('taskmaster_users')) || [];
-        const loginError = document.getElementById('loginError');
-        const registerError = document.getElementById('registerError');
-
-        // Handle Registration
-        document.getElementById('register-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const username = document.getElementById('registerUsername').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-
-            // Simple validation
-            if (password.length < 6) {
-                registerError.textContent = 'Password must be at least 6 characters.';
-                registerError.style.display = 'block';
-                return;
-            }
-
-            // Check if user already exists
-            const existingUser = users.find(user => user.email === email);
-            if (existingUser) {
-                registerError.textContent = 'This email is already registered.';
-                registerError.style.display = 'block';
-                return;
-            }
-
-            // Create new user
-            const newUser = {
-                id: Date.now().toString(),
-                username: username,
-                email: email,
-                password: password, // In a real app, this should be hashed
-                createdAt: new Date().toISOString()
-            };
-
-            users.push(newUser);
-            localStorage.setItem('taskmaster_users', JSON.stringify(users));
-            localStorage.setItem('taskmaster_current_user', JSON.stringify(newUser));
-
-            registerError.textContent = '';
-            registerError.style.display = 'none';
-
-            // Redirect to the main app page
-            window.location.href = 'taskmaster-app.html';
-        });
-
-        // Handle Login
-        document.getElementById('login-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            // Find user
-            const user = users.find(u => u.email === email && u.password === password);
-
-            if (user) {
-                // Login successful
-                localStorage.setItem('taskmaster_current_user', JSON.stringify(user));
-                loginError.textContent = '';
-                loginError.style.display = 'none';
-
-                // Redirect to the main app page
-                window.location.href = 'taskmaster-app.html';
-            } else {
-                // Login failed
-                loginError.textContent = 'Invalid email or password.';
-                loginError.style.display = 'block';
-            }
-        });
-    </script>
+    <!-- Link to external JavaScript file -->
+    <script src="js/auth.js" type="module"></script>
 </body>
-
 </html>
